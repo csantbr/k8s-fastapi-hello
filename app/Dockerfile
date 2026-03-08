@@ -1,12 +1,14 @@
-FROM python:3.11-slim
+FROM gcc:13-bookworm AS builder
+
+WORKDIR /build
+COPY main.cpp .
+RUN g++ -o server main.cpp -lpthread -O2 -static-libstdc++ -static-libgcc
+
+FROM debian:bookworm-slim
 
 WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY main.py .
+COPY --from=builder /build/server .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./server"]

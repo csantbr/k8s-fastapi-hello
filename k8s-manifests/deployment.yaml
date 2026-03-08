@@ -1,42 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-hello
+  name: cpp-hello
   namespace: default
   labels:
-    app: fastapi-hello
+    app: cpp-hello
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: fastapi-hello
+      app: cpp-hello
   template:
     metadata:
       labels:
-        app: fastapi-hello
+        app: cpp-hello
     spec:
       containers:
-        - name: fastapi-hello
-          image: fastapi-hello:v2
+        - name: cpp-hello
+          image: cpp-hello:v1
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
           livenessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8000
             initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8000
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
             requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
               memory: "64Mi"
               cpu: "100m"
-            limits:
-              memory: "128Mi"
-              cpu: "200m"
