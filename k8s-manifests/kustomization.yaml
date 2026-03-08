@@ -6,4 +6,4 @@ resources:
   - service.yaml
 
 commonLabels:
-  project: cpp-hello-world
+  project: cpp-server

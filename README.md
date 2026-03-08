@@ -1,66 +1,69 @@
-# C++ Hello World no Kubernetes
+# C++ TCP Server on Kubernetes
 
-Projeto de servidor TCP Hello World em C++ rodando em Kubernetes local com ArgoCD.
+Microserviço TCP de alta performance em C++ com deploy automatizado via ArgoCD em Kubernetes local.
+
+## Stack
+
+- **Linguagem**: C++17
+- **Container**: Docker (multi-stage build com GCC)
+- **Orquestração**: Kubernetes (Kind)
+- **GitOps**: ArgoCD
+- **Healthcheck**: TCP Socket Probe
 
 ## Estrutura
 
 ```
-k8s/
-├── app/                      # Código da aplicação
-│   ├── main.cpp              # Servidor TCP C++
-│   ├── Dockerfile            # Build multi-stage com GCC
+├── app/
+│   ├── main.cpp              # Servidor TCP
+│   ├── Dockerfile            # Build multi-stage
 │   └── .dockerignore
-├── k8s-manifests/            # Manifests Kubernetes
-│   ├── deployment.yaml       # Deployment da aplicação
+├── k8s-manifests/
+│   ├── deployment.yaml       # Deployment (2 réplicas)
 │   ├── service.yaml          # Service NodePort
-│   └── kustomization.yaml    # Kustomize config
-├── kind-config.yaml          # Configuração do cluster Kind
-└── argocd-app.yaml           # Application ArgoCD (template)
+│   └── kustomization.yaml
+├── kind-config.yaml          # Cluster config
+└── argocd-app.yaml           # GitOps Application
 ```
 
-## Acessos
+## Endpoints
 
-### Servidor C++ TCP
-- **URL**: tcp://localhost:30080
-- **Resposta**: "Hello World from C++!"
-- **Healthcheck**: TCP Socket Probe na porta 8000
+| Porta | Protocolo | Descrição |
+|-------|-----------|-----------|
+| 30080 | TCP | Serviço exposto |
+| 8000 | TCP | Container port / Healthcheck |
 
-### ArgoCD UI
+**Resposta**: `{"status":"ok","service":"cpp-server"}`
+
+## ArgoCD
+
 - **URL**: https://localhost:8080
 - **Usuário**: `admin`
 - **Senha**: `0XajmEgsIo-dZZ3W`
 
-## Comandos Úteis
+## Comandos
 
-### Verificar pods
 ```powershell
-kubectl get pods
-```
+# Status dos pods
+kubectl get pods -l app=cpp-server
 
-### Ver logs da aplicação
-```powershell
-kubectl logs -l app=cpp-hello -f
-```
+# Logs
+kubectl logs -l app=cpp-server -f
 
-### Reiniciar deployment
-```powershell
-kubectl rollout restart deployment/cpp-hello
-```
+# Restart
+kubectl rollout restart deployment/cpp-server
 
-### Acessar ArgoCD (se o port-forward parou)
-```powershell
+# Build e deploy
+docker build -t cpp-server:v1 ./app
+kind load docker-image cpp-server:v1 --name cpp-cluster
+kubectl rollout restart deployment/cpp-server
+
+# ArgoCD UI
 kubectl port-forward svc/argocd-server -n argocd 8080:443
-```
 
-### Rebuild da imagem
-```powershell
-cd app
-docker build -t cpp-hello:v1 .
-kind load docker-image cpp-hello:v1 --name cpp-cluster
-kubectl rollout restart deployment/cpp-hello
-```
-
-### Deletar cluster
-```powershell
+# Deletar cluster
 kind delete cluster --name cpp-cluster
 ```
+
+## Licença
+
+MIT

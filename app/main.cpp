@@ -27,7 +27,7 @@ void signal_handler(int signal) {
 }
 
 void handle_client(SOCKET client_socket) {
-    const char* response = "Hello World from C++!\n";
+    const char* response = "{\"status\":\"ok\",\"service\":\"cpp-server\"}\n";
     send(client_socket, response, strlen(response), 0);
     closesocket(client_socket);
 }

@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cpp-hello
+  name: cpp-server
   namespace: default
   labels:
-    app: cpp-hello
+    app: cpp-server
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: cpp-hello
+      app: cpp-server
   template:
     metadata:
       labels:
-        app: cpp-hello
+        app: cpp-server
     spec:
       containers:
-        - name: cpp-hello
-          image: cpp-hello:v1
+        - name: cpp-server
+          image: cpp-server:v1
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
