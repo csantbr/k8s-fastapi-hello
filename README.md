@@ -1,15 +1,14 @@
-# FastAPI Hello World no Kubernetes
+# C++ Hello World no Kubernetes
 
-Projeto de API Hello World em FastAPI rodando em Kubernetes local com ArgoCD.
+Projeto de servidor TCP Hello World em C++ rodando em Kubernetes local com ArgoCD.
 
 ## Estrutura
 
 ```
 k8s/
 ├── app/                      # Código da aplicação
-│   ├── main.py               # API FastAPI
-│   ├── requirements.txt      # Dependências Python
-│   ├── Dockerfile            # Imagem Docker
+│   ├── main.cpp              # Servidor TCP C++
+│   ├── Dockerfile            # Build multi-stage com GCC
 │   └── .dockerignore
 ├── k8s-manifests/            # Manifests Kubernetes
 │   ├── deployment.yaml       # Deployment da aplicação
@@ -21,11 +20,10 @@ k8s/
 
 ## Acessos
 
-### API FastAPI
-- **URL**: http://localhost:30080
-- **Endpoints**:
-  - `GET /` - Hello World
-  - `GET /health` - Healthcheck
+### Servidor C++ TCP
+- **URL**: tcp://localhost:30080
+- **Resposta**: "Hello World from C++!"
+- **Healthcheck**: TCP Socket Probe na porta 8000
 
 ### ArgoCD UI
 - **URL**: https://localhost:8080
@@ -41,12 +39,12 @@ kubectl get pods
 
 ### Ver logs da aplicação
 ```powershell
-kubectl logs -l app=fastapi-hello -f
+kubectl logs -l app=cpp-hello -f
 ```
 
 ### Reiniciar deployment
 ```powershell
-kubectl rollout restart deployment/fastapi-hello
+kubectl rollout restart deployment/cpp-hello
 ```
 
 ### Acessar ArgoCD (se o port-forward parou)
@@ -57,12 +55,12 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 ### Rebuild da imagem
 ```powershell
 cd app
-docker build -t fastapi-hello:latest .
-kind load docker-image fastapi-hello:latest --name fastapi-cluster
-kubectl rollout restart deployment/fastapi-hello
+docker build -t cpp-hello:v1 .
+kind load docker-image cpp-hello:v1 --name cpp-cluster
+kubectl rollout restart deployment/cpp-hello
 ```
 
 ### Deletar cluster
 ```powershell
-kind delete cluster --name fastapi-cluster
+kind delete cluster --name cpp-cluster
 ```

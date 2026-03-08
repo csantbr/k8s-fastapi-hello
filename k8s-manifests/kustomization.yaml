@@ -6,4 +6,4 @@ resources:
   - service.yaml
 
 commonLabels:
-  project: fastapi-hello-world
+  project: cpp-hello-world
